@@ -43,9 +43,6 @@ It is highly recommended to run this code within a virtual machine with at least
 
 Use this space to show useful examples of how a project can be used. Additional screenshots, code examples and demos work well in this space. You may also link to more resources.
 
-_For more examples, please refer to the [Documentation](https://example.com)_
-
-
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
