@@ -1,6 +1,6 @@
-
+# Data Exfiltration through Ookla's Speedtest
 <!-- ABOUT THE PROJECT -->
-## About The Project
+## About the Project
 
 This project demonstrates data exfiltration through Ookla's Speedtest. Speedtest servers using HTTP (e.g. http://speedtest.midco.net) conduct Speedtests over plaintext communications. The TCP payloads from the client -> server can be overwritten without corrupting the Speedtest because there are no data integrity checks. This makes Speedtest a strong C2 vector candidate, providing a unique opportunity to exfiltrate large datasets. 
 
@@ -29,7 +29,7 @@ It is highly recommended to run this code within a virtual machine with at least
    insmod speedtest-exfil.ko
    ```
 5. Navigate to a Speedtest HTTP server and hit Go
-6. Observe the packets using Wireshark
+6. Observe the packets using Wireshark (receiver script coming soon!)
 
 <!-- USAGE EXAMPLES -->
 ## Usage
