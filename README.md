@@ -7,7 +7,7 @@ This project demonstrates data exfiltration through Ookla's Speedtest. Speedtest
 <!-- GETTING STARTED -->
 ## Getting Started
 
-`speedtest-exfil.c` is a Linux Kernel Module (LKM) utilizing the Netfilter framework as a proof-of-concept for exfiltrating data via Speedtest traffic. This LKM was tested on Ubuntu 24.04 with kernel version 6.8. 
+`speedtest-exfil.c` is a Linux Kernel Module (LKM) utilizing the Netfilter framework as a proof-of-concept for exfiltrating data via Speedtest traffic. This LKM was tested on Ubuntu 24.04 with kernel version 6.8. * Code still being worked on. *
 
 ### Prerequisites
 
