@@ -138,7 +138,7 @@ static unsigned int hook_func(void *priv, struct sk_buff *skb, const struct nf_h
 	//total packet length
 	total_len = ntohs(ip_header->tot_len);
 
-    //filtering on the PSH/ACK upload speed packets over port 8080
+    //filtering on the PSH/ACK upload speed packets over port 8080 - Please be mindful that other TCP traffic could hit on this conditional statement!
 	if (ntohs(tcp_header->dest) == 8080 &&
 		 source_ip == client_ip &&
 		 tcp_header->fin == 0 &&
