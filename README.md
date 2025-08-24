@@ -11,32 +11,25 @@ This project demonstrates data exfiltration through Ookla's Speedtest. Speedtest
 
 ### Prerequisites
 
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
+It is highly recommended to run this code within a virtual machine with at least 16GB of RAM.
 
 ### Installation
 
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
+1. Clone the repo
    ```sh
-   git clone https://github.com/github_username/repo_name.git
+   git clone 
    ```
-3. Install NPM packages
+2. Modify the `speedtest-exfil.c` to include your source IP address and the test file you want to exfiltrate. 
+3. Make
    ```sh
-   npm install
+   make
    ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
-5. Change git remote url to avoid accidental pushes to base project
+4. Insert LKM
    ```sh
-   git remote set-url origin github_username/repo_name
-   git remote -v # confirm the changes
+   insmod speedtest-exfil.ko
    ```
+5. Navigate to a Speedtest HTTP server and hit Go
+6. Observe the packets using Wireshark
 
 <!-- USAGE EXAMPLES -->
 ## Usage
@@ -49,11 +42,8 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 <!-- ACKNOWLEDGMENTS -->
 ## Acknowledgments
 
-* []()
-* []()
-* []()
+I want to thank my mentor, Dr. Andrew Kramer of Dakota State University, for providing the original idea that inspired this project and for their continuous guidance and support throughout my career in cybersecurity. 
 
-<p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
 
