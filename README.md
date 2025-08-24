@@ -17,7 +17,7 @@ It is highly recommended to run this code within a virtual machine with at least
 
 1. Clone the repo
    ```sh
-   git clone 
+   git clone https://github.com/janessapalmieri/speedtest-data-exfil.git
    ```
 2. Modify the `speedtest-exfil.c` to include your source IP address and the test file you want to exfiltrate. 
 3. Make
@@ -30,7 +30,14 @@ It is highly recommended to run this code within a virtual machine with at least
    ```
 5. Navigate to a Speedtest HTTP server and hit Go
 6. Observe the packets using Wireshark (receiver script coming soon!)
-
+7. Remove LKM 
+   ```sh
+   rmmod speedtest-exfil.ko
+   ```
+8. Clean
+   ```sh
+   make clean
+   ```   
 <!-- USAGE EXAMPLES -->
 ## Usage
 
