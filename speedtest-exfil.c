@@ -26,8 +26,8 @@ Tested on Ubuntu 24.04 with version 6.8 kernel.
 #include <linux/fs.h>
 
 MODULE_LICENSE("GPL");
-MODULE_AUTHOR("Janessa");
-MODULE_DESCRIPTION("Kernel module to modify internet speed tests.");
+MODULE_AUTHOR("Janessa Palmieri");
+MODULE_DESCRIPTION("Kernel module to modify Speedtest packets.");
 
 //const vars to skip OPTIONS and POST packets over port 8080
 #define SEARCH_STR_OPTIONS "OPTIONS"
