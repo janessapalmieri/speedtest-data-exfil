@@ -14,7 +14,7 @@ When the upload speed is calculated, the client sends PSH/ACK packets with large
 
 `speedtest-exfil.c` is a Linux Kernel Module (LKM) utilizing the Netfilter framework as a proof-of-concept (PoC) for exfiltrating data via Speedtest traffic. Please note this is not a universal data exfiltration tool, but rather a PoC to demonstrate the possibility of data exfiltration through Speedtest traffic. 
 
-`speedtest-exfil.c` contains two primary functions: one calculates the maximum number of bytes exfiltrated in a single Speedtest, and the other exfiltrates a test file from the client machine. 
+`speedtest-exfil.c` contains two primary functions: one overwrites the entire TCP payload and calculates the maximum number of bytes that can be exfiltrated in a single Speedtest `max_bytes_exfiled()`, and the other exfiltrates a test file from the client machine `exfil_file()`. 
 
 
 This LKM was tested on Ubuntu 24.04 with kernel version 6.8. 
