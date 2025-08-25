@@ -16,12 +16,15 @@ When the upload speed is calculated, the client sends PSH/ACK packets with large
 
 `speedtest-exfil.c` contains two primary functions: one overwrites the entire TCP payload and calculates the maximum number of bytes that can be exfiltrated in a single Speedtest `max_bytes_exfiled()`, and the other exfiltrates a test file from the client machine `exfil_file()`. 
 
-
 This LKM was tested on Ubuntu 24.04 with kernel version 6.8. 
 
 ### Prerequisites
 
 It is highly recommended to run this code within a virtual machine with at least 16GB of RAM.
+
+Modify the code to include your source IP address and the function you want to run (`max_bytes_exfiled()` or `exfil_file()`). When using `exfil_file()`, modify the file path to the test file you want to exfiltrate. Both functions cannot run within the program - comment out the function call you are not using. 
+
+Need root privileges. 
 
 ### Installation
 
@@ -29,7 +32,7 @@ It is highly recommended to run this code within a virtual machine with at least
    ```sh
    git clone https://github.com/janessapalmieri/speedtest-data-exfil.git
    ```
-2. Modify the `speedtest-exfil.c` to include your source IP address and the test file you want to exfiltrate. 
+2. Modify the `speedtest-exfil.c` as described in the Prerequisites section. 
 3. Make
    ```sh
    make
@@ -38,7 +41,7 @@ It is highly recommended to run this code within a virtual machine with at least
    ```sh
    insmod speedtest-exfil.ko
    ```
-5. Navigate to a Speedtest HTTP server and hit Go
+5. Navigate to a Speedtest HTTP server and hit Go (or use the Speedtest CLI)
 6. Observe the packets using Wireshark (receiver script coming soon!)
 7. Remove LKM 
    ```sh
