@@ -75,8 +75,8 @@ Figure 1 demonstrates the `exfil_file()` function in `speedtest-exfil.c` observe
 I want to thank my mentor, Dr. Andrew Kramer of Dakota State University, for providing the original idea that inspired this project and for their continuous guidance and support throughout my career in cybersecurity. 
 
 ## References
-Building the LKM: https://infosecwriteups.com/linux-kernel-communication-part-1-netfilter-hooks-15c07a5a5c4e
-
+- Building the LKM: https://infosecwriteups.com/linux-kernel-communication-part-1-netfilter-hooks-15c07a5a5c4e
+- List of servers available via Speedtest-CLI: https://williamyaps.github.io/wlmjavascript/servercli.html
 
 
 
