@@ -24,7 +24,7 @@ This LKM was tested on Ubuntu 24.04 with kernel version 6.8. GCC needed for `Mak
 
 It is highly recommended to run this code within a virtual machine with at least 16GB of RAM.
 
-Modify the code to include your source IP address and the function you want to run (`max_bytes_exfiled()` or `exfil_file()`). When using `exfil_file()`, modify the file path to the test file you want to exfiltrate. Both functions cannot run within the program - comment out the function call you are not using. 
+Modify the code to include your source IP address and the function you want to run (`max_bytes_exfiled()` or `exfil_file()`). When using `exfil_file()`, modify the file path to the test file (e.g. `testfile.txt`) you want to exfiltrate. Both functions cannot run within the program - comment out the function call you are not using. 
 
 Need root privileges. 
 
