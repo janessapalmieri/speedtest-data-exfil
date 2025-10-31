@@ -3,7 +3,7 @@ import os
 import re
 
 OUTFILE = "exfiled_testfile.txt" #output file that stores the exfiltrated file from the client
-FILTER = "tcp and src host 127.0.0.1 and port 8080 and tcp[13] & 0x18 == 0x18" #filters on upload speed packets; change to your client IP if the reciever script is running on a passive observer 
+FILTER = "tcp and src host 127.0.0.1 and port 8080 and tcp[13] & 0x18 == 0x18" #filters on upload speed packets; change to your client IP if the receiver script is running on a passive observer 
 
 pattern = re.compile(r"\*([A-Za-z0-9 ]+)\*") #lil regex to read bytes between two "*"
 
