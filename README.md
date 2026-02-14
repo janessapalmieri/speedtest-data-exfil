@@ -3,6 +3,8 @@
 ## About the Project
 This project demonstrates the possibility of data exfiltration through Ookla's Speedtest traffic. Speedtest servers using HTTP (e.g. http://speedtest.midco.net) or Speedtest-CLI conduct Speedtests over plaintext. The TCP payloads from the client -> server can be overwritten without corrupting the Speedtest because no data integrity checks are in place. This makes Speedtest a strong C2 vector candidate, providing a unique opportunity to exfiltrate large datasets. 
 
+This repository accompanies the IEEE publication *Leveraging Internet Speed Tests as a Covert Channel* presented at the 2025 Cyber Awareness Research Symposium (CARS).
+
 <!-- GETTING STARTED -->
 ## How it Works
 Speedtest measures upload and download speeds by sending large random data chunks to and from the server and client. These random data chunks are a sequence of bytes not checked by the client or server, and are just used to test the Internet speed.
@@ -24,9 +26,7 @@ This LKM was tested on Ubuntu 24.04 with kernel version 6.8. GCC needed for `Mak
 
 It is highly recommended to run this code within a virtual machine with at least 16GB of RAM.
 
-Modify the code to include your source IP address and the function you want to run (`max_bytes_exfiled()` or `exfil_file()`). When using `exfil_file()`, modify the file path to the test file (e.g. `testfile.txt`) you want to exfiltrate. Both functions cannot run within the program; comment out the function call you are not using. 
-
-Need root privileges. 
+Need *root* privileges. 
 
 ### Installation
 
@@ -34,7 +34,9 @@ Need root privileges.
    ```sh
    git clone https://github.com/janessapalmieri/speedtest-data-exfil.git
    ```
-2. Modify the `speedtest-exfil.c` as described in the Prerequisites section. 
+2. Modify the `speedtest-exfil.c`.
+   - Modify the constant variables: `TEST_FILE` and `SOURCE_IP`
+   - Choose the function you want to run (`max_bytes_exfiled()` or `exfil_file()`). Both functions cannot run within the program; comment out the function call you are not using.
 3. Make
    ```sh
    make
@@ -50,12 +52,12 @@ Need root privileges.
         ```sh
         python3 receiver.py
         ```
-10. Run the Speedtest! Hit GO
-11. Remove LKM 
+7. Run the Speedtest! Hit GO
+8. Remove LKM 
    ```sh
    rmmod speedtest-exfil.ko
    ```
-11. Clean
+9. Clean
    ```sh
    make clean
    ```   
@@ -74,9 +76,13 @@ Figure 1 demonstrates the `exfil_file()` function in `speedtest-exfil.c` observe
 
 I want to thank my mentor, Dr. Andrew Kramer of Dakota State University, for providing the original idea that inspired this project and for their continuous guidance and support throughout my career in cybersecurity. 
 
-## References
-- Building the LKM: https://infosecwriteups.com/linux-kernel-communication-part-1-netfilter-hooks-15c07a5a5c4e
-- List of servers available via Speedtest-CLI: https://williamyaps.github.io/wlmjavascript/servercli.html
+## 📚 References
 
+1. Palmieri, J., & Kramer, A. (2025). *Leveraging Internet Speed Tests as a Covert Channel for Data Exfiltration.*
+   In Proceedings of the 2025 Cyber Awareness and Research Symposium (CARS) (pp. 1–7). IEEE. https://doi.org/10.1109/CARS67163.2025.11337658
 
+2. Infosec Writeups. (n.d.). *Linux Kernel Communication Part 1: Netfilter Hooks.*
+   Retrieved from https://infosecwriteups.com/linux-kernel-communication-part-1-netfilter-hooks-15c07a5a5c4e
 
+3. Yaps, W. (n.d.). *List of servers available via Speedtest-CLI.*
+   Retrieved from https://williamyaps.github.io/wlmjavascript/servercli.html
