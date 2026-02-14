@@ -1,18 +1,18 @@
 # Data Exfiltration through Ookla's Speedtest
 <!-- ABOUT THE PROJECT -->
-## About the Project
+## 📌 About the Project
 This project demonstrates the possibility of data exfiltration through Ookla's Speedtest traffic. Speedtest servers using HTTP (e.g. http://speedtest.midco.net) or Speedtest-CLI conduct Speedtests over plaintext. The TCP payloads from the client -> server can be overwritten without corrupting the Speedtest because no data integrity checks are in place. This makes Speedtest a strong C2 vector candidate, providing a unique opportunity to exfiltrate large datasets. 
 
 This repository accompanies the IEEE publication *Leveraging Internet Speed Tests as a Covert Channel* presented at the 2025 Cyber Awareness Research Symposium (CARS).
 
 <!-- GETTING STARTED -->
-## How it Works
+## 🔍 How it Works
 Speedtest measures upload and download speeds by sending large random data chunks to and from the server and client. These random data chunks are a sequence of bytes not checked by the client or server, and are just used to test the Internet speed.
 
 When the upload speed is calculated, the client sends PSH/ACK packets with large TCP payloads containing the random data chunks to the server, which can be manipulated for data exfiltration. 
 
 <!-- GETTING STARTED -->
-## Getting Started
+## ⚙️ Getting Started
 
 `speedtest-exfil.c` is a Linux Kernel Module (LKM) utilizing the Netfilter framework as a proof-of-concept (PoC) for exfiltrating data via Speedtest traffic. Please note this is not a universal data exfiltration tool, but rather a PoC to demonstrate the possibility of data exfiltration through Speedtest traffic. 
 
@@ -22,13 +22,13 @@ When the upload speed is calculated, the client sends PSH/ACK packets with large
 
 This LKM was tested on Ubuntu 24.04 with kernel version 6.8. GCC needed for `Makefile`.
 
-### Prerequisites
+### 📦 Prerequisites
 
 It is highly recommended to run this code within a virtual machine with at least 16GB of RAM.
 
 Need *root* privileges. 
 
-### Installation
+### 🛠️ Installation
 
 1. Clone the repo
    ```sh
@@ -62,7 +62,7 @@ Need *root* privileges.
    make clean
    ```   
 <!-- USAGE EXAMPLES -->
-## Usage
+## 🚀 Usage
 
 Figure 1 demonstrates the `exfil_file()` function in `speedtest-exfil.c` observed in Wireshark. 
 <p align="center">
@@ -72,7 +72,7 @@ Figure 1 demonstrates the `exfil_file()` function in `speedtest-exfil.c` observe
 </p>
 
 <!-- ACKNOWLEDGMENTS -->
-## Acknowledgments
+## 💡 Acknowledgments
 
 I want to thank my mentor, Dr. Andrew Kramer of Dakota State University, for providing the original idea that inspired this project and for their continuous guidance and support throughout my career in cybersecurity. 
 
