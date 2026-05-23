@@ -39,5 +39,13 @@ echo "Loading LKM..."
 sudo insmod speedtest-exfil.ko
 
 echo ""
-echo "Done! Run your Speedtest now."
-echo "When finished, run: sudo rmmod speedtest-exfil.ko && make clean"
+if [ "$choice" == "1" ]; then
+    echo "Running speedtest..."
+    speedtest-cli
+    sudo rmmod speedtest_exfil
+    echo ""
+    sudo dmesg | tail -1
+else
+    echo "Done! Run your Speedtest now."
+    echo "When finished, run: sudo rmmod speedtest-exfil.ko && make clean"
+fi
