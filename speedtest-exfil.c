@@ -90,8 +90,8 @@ static unsigned int exfil_file(struct sk_buff *skb, int offset) {
 static unsigned int max_bytes_exfiled(struct sk_buff *skb, int offset, int len) {
     int i;
     char random;
-    
-    //overwrite the TCP payload with random bytes 
+
+    //overwrite the TCP payload with random bytes
     for (i = 0; i < len; i++) {
         random = (i * 31 + 17) & 0XFF;	//get_random_bytes and jiffies slows down speed test reported speeds, using Linear Congruential Generator
         skb_store_bits(skb, offset + i, &random, 1);
