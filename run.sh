@@ -12,8 +12,27 @@ NC='\033[0m'
 
 echo -e "${BOLD}${SPEEDTEST_PURPLE}╔════════════════════════════════════════╗${NC}"
 echo -e "${BOLD}${SPEEDTEST_PURPLE}║  Data Exfiltration through Speedtest   ║${NC}"
-echo -e "${BOLD}${SPEEDTEST_PURPLE}║  ${DIM}${ITALIC}Author: Janessa Palmieri${NC}${BOLD}${SPEEDTEST_PURPLE}           ║${NC}"
+echo -e "${BOLD}${SPEEDTEST_PURPLE}║  ${DIM}${ITALIC}Author: Janessa Palmieri${NC}${BOLD}${SPEEDTEST_PURPLE}              ║${NC}"
 echo -e "${BOLD}${SPEEDTEST_PURPLE}╚════════════════════════════════════════╝${NC}"
+
+trap 'echo -e "\n${RED}Error: something went wrong. Exiting.${NC}" >&2; exit 1' ERR
+set -e
+
+# Check dependencies
+echo -e "\n${YELLOW}Checking dependencies...${NC}"
+
+deps_ok=true
+command -v make &>/dev/null || { echo -e "${RED}Missing: make${NC}"; deps_ok=false; }
+command -v gcc &>/dev/null || { echo -e "${RED}Missing: gcc${NC}"; deps_ok=false; }
+[ -d "/lib/modules/$(uname -r)/build" ] || { echo -e "${RED}Missing: linux kernel headers${NC}"; deps_ok=false; }
+command -v speedtest-cli &>/dev/null || { echo -e "${RED}Missing: speedtest-cli${NC}"; deps_ok=false; }
+
+if [ "$deps_ok" = false ]; then
+    echo -e "${RED}Please install missing dependencies and try again.${NC}"
+    exit 1
+fi
+
+echo -e "${GREEN}All dependencies found.${NC}"
 
 # Detect client IP
 source_ip=$(ip a | grep 'inet ' | grep -v '127.0.0.1' | awk '{print $2}' | cut -d/ -f1 | head -1)
@@ -58,7 +77,7 @@ if [ "$choice" == "1" ]; then
     speedtest-cli
     sudo rmmod speedtest_exfil && make clean
     echo ""
-    echo -e "${BOLD}${CYAN}Total exfil output:${NC}"
+    echo -e "${BOLD}${SPEEDTEST_PURPLE}Total exfil output:${NC}"
     sudo dmesg | tail -1
 else
     echo -e "${GREEN}Done! Run your Speedtest now.${NC}"
