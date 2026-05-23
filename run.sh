@@ -2,8 +2,9 @@
 
 echo "=== Speedtest Exfil Setup ==="
 
-# Get user input
-read -p "Enter SOURCE_IP (e.g. 192.168.1.10): " source_ip
+# Detect client IP
+source_ip=$(ip a | grep 'inet ' | grep -v '127.0.0.1' | awk '{print $2}' | cut -d/ -f1 | head -1)
+echo "Using SOURCE_IP: $source_ip"
 
 # Modify constants in C file
 sed -i "s|#define SOURCE_IP.*|#define SOURCE_IP \"$source_ip\"|" speedtest-exfil.c
