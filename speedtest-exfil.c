@@ -211,7 +211,7 @@ static int __init LKM_init(void)
 static void __exit LKM_exit(void)
 {
 	nf_unregister_net_hook(&init_net, nfho);
-//	pr_info("Total bytes exfiled: %lu\n", total_exfiled_bytes);
+//	pr_info("Total bytes exfiled: %lu bytes (%lu.%lu GB)\n", total_exfiled_bytes, total_exfiled_bytes / 1073741824, (total_exfiled_bytes % 1073741824) * 10 / 1073741824);
 }
 module_init(LKM_init);
 module_exit(LKM_exit);
