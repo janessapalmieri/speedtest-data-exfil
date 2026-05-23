@@ -20,13 +20,13 @@ When the upload speed is calculated, the client sends PSH/ACK packets with large
 - `max_bytes_exfiled()` overwrites the entire TCP payload and calculates the maximum number of bytes that can be exfiltrated in a single Speedtest. 
 - `exfil_file()` exfiltrates a test file from the client machine. 
 
-This LKM was tested on Ubuntu 24.04 with kernel version 6.8. GCC needed for `Makefile`.
+> ⚠️ Tested on Ubuntu 24.04 — kernel 6.8
 
 ### 📦 Prerequisites
 
-It is highly recommended to run this code within a virtual machine with at least 16GB of RAM.
-
-Need *root* privileges. 
+- Virtual machine recommended (16 GB RAM minimum)
+- Root privileges required
+- Dependencies: `gcc`, `make`
 
 ### 🛠️ Installation
 
