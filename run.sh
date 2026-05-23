@@ -42,7 +42,7 @@ echo ""
 if [ "$choice" == "1" ]; then
     echo "Running speedtest..."
     speedtest-cli
-    sudo rmmod speedtest_exfil
+    sudo rmmod speedtest_exfil && make clean
     echo ""
     sudo dmesg | tail -1
 else
