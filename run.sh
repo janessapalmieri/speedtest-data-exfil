@@ -21,8 +21,8 @@ if [ "$choice" == "1" ]; then
     sed -i "s|        exfil_file(skb, tcp_payloadoffset);|        //exfil_file(skb, tcp_payloadoffset);|" speedtest-exfil.c
     sed -i "s|        //max_bytes_exfiled(skb, tcp_payloadoffset, tcp_payloadlen);|        max_bytes_exfiled(skb, tcp_payloadoffset, tcp_payloadlen);|" speedtest-exfil.c
 elif [ "$choice" == "2" ]; then
-    sed -i "s|        //max_bytes_exfiled(skb, tcp_payloadoffset, tcp_payloadlen);|        max_bytes_exfiled(skb, tcp_payloadoffset, tcp_payloadlen);|" speedtest-exfil.c
-    sed -i "s|        exfil_file(skb, tcp_payloadoffset);|        //exfil_file(skb, tcp_payloadoffset);|" speedtest-exfil.c
+    sed -i "s|        //exfil_file(skb, tcp_payloadoffset);|        exfil_file(skb, tcp_payloadoffset);|" speedtest-exfil.c
+    sed -i "s|        max_bytes_exfiled(skb, tcp_payloadoffset, tcp_payloadlen);|        //max_bytes_exfiled(skb, tcp_payloadoffset, tcp_payloadlen);|" speedtest-exfil.c
 else
     echo "Invalid choice. Exiting."
     exit 1
