@@ -7,7 +7,9 @@ CYAN='\033[0;36m'
 BOLD='\033[1m'
 NC='\033[0m'
 
-echo -e "${BOLD}${CYAN}=== Speedtest Exfil Setup ===${NC}"
+echo -e "${BOLD}${CYAN}╔══════════════════════════╗${NC}"
+echo -e "${BOLD}${CYAN}║   Speedtest Exfil Setup  ║${NC}"
+echo -e "${BOLD}${CYAN}╚══════════════════════════╝${NC}"
 
 # Detect client IP
 source_ip=$(ip a | grep 'inet ' | grep -v '127.0.0.1' | awk '{print $2}' | cut -d/ -f1 | head -1)
@@ -52,7 +54,7 @@ if [ "$choice" == "1" ]; then
     speedtest-cli
     sudo rmmod speedtest_exfil && make clean
     echo ""
-    echo -e "${CYAN}Total exfil output:${NC}"
+    echo -e "${BOLD}${CYAN}Total exfil output:${NC}"
     sudo dmesg | tail -1
 else
     echo -e "${GREEN}Done! Run your Speedtest now.${NC}"
