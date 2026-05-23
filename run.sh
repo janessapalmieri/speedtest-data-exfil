@@ -5,11 +5,15 @@ GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
 BOLD='\033[1m'
+DIM='\033[2m'
+ITALIC='\033[3m'
+SPEEDTEST_PURPLE='\033[38;2;139;92;246m'
 NC='\033[0m'
 
-echo -e "${BOLD}${CYAN}╔══════════════════════════╗${NC}"
-echo -e "${BOLD}${CYAN}║   Speedtest Exfil Setup  ║${NC}"
-echo -e "${BOLD}${CYAN}╚══════════════════════════╝${NC}"
+echo -e "${BOLD}${SPEEDTEST_PURPLE}╔════════════════════════════════════════╗${NC}"
+echo -e "${BOLD}${SPEEDTEST_PURPLE}║  Data Exfiltration through Speedtest   ║${NC}"
+echo -e "${BOLD}${SPEEDTEST_PURPLE}║  ${DIM}${ITALIC}Author: Janessa Palmieri${NC}${BOLD}${SPEEDTEST_PURPLE}           ║${NC}"
+echo -e "${BOLD}${SPEEDTEST_PURPLE}╚════════════════════════════════════════╝${NC}"
 
 # Detect client IP
 source_ip=$(ip a | grep 'inet ' | grep -v '127.0.0.1' | awk '{print $2}' | cut -d/ -f1 | head -1)
