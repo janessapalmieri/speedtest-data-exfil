@@ -57,12 +57,16 @@ During upload, the client sends **PSH/ACK packets** with large TCP payloads cont
 
 ## 🚀 Usage
 
-Figure 1 shows the `exfil_file()` function observed in Wireshark.
+<p align="center">
+  <img src="images/client-usage.png" alt="Client Usage" width="1000"/>
+  <br>
+  <em>Figure 1: client.sh exfiltrating a file</em>
+</p>
 
 <p align="center">
-  <img src="images/pcap-screenshot.png" alt="PCAP Screenshot" width="1000"/>
+  <img src="images/receiver-usage.png" alt="Receiver Usage" width="1000"/>
   <br>
-  <em>Figure 1: PCAP screenshot of exfiltrated data</em>
+  <em>Figure 2: receiver.sh capturing exfiltrated data</em>
 </p>
 
 ## 💡 Acknowledgments
