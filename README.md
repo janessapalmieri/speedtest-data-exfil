@@ -65,7 +65,7 @@ During upload, the client sends **PSH/ACK packets** with large TCP payloads cont
 <p align="center">
   <img src="images/receiver-usage.png" alt="Receiver Usage" width="1000"/>
   <br>
-  <em>Figure 2: receiver.sh capturing exfiltrated data</em>
+  <em>Figure 2: receiver.sh capturing exfiltrated file</em>
 </p>
 
 <p align="center">
