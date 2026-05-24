@@ -22,13 +22,13 @@ During upload, the client sends **PSH/ACK packets** with large TCP payloads cont
 | `max_bytes_exfiled()` | Overwrites the entire TCP payload and calculates the maximum bytes exfiltrable in a single Speedtest |
 | `exfil_file()` | Exfiltrates a test file from the client machine |
 
-> ⚠️ Only one function can run at a time — comment out the one you are not using.
+> ⚠️ Only one function can run at a time — `client.sh` handles this automatically.
 
 ### 📦 Prerequisites
 - Virtual machine recommended (16 GB RAM minimum)
 - Root privileges required
-- Dependencies: `gcc`, `make`
-- Optional: Python + [Scapy](https://scapy.readthedocs.io/en/latest/installation.html) for `receiver.py`
+- Dependencies: `gcc`, `make`, `speedtest-cli`
+- Observer dependencies: Python 3 + [Scapy](https://scapy.readthedocs.io/en/latest/installation.html)
 
 ### 🛠️ Installation & Usage
 
@@ -37,33 +37,23 @@ During upload, the client sends **PSH/ACK packets** with large TCP payloads cont
    git clone https://github.com/janessapalmieri/speedtest-data-exfil.git
    ```
 
-2. **Configure** `speedtest-exfil.c`
-   - Set the `TEST_FILE` and `SOURCE_IP` constants
-   - Comment out the function you are not using (`max_bytes_exfiled()` or `exfil_file()`)
-
-3. **Build**
+2. **On the client machine, run:**
    ```sh
-   make
+   ./client.sh
    ```
+   - Auto-detects your IP
+   - Select a function to run:
+     - `max_bytes_exfiled()` — calculates max exfiltration capacity
+     - `exfil_file()` — exfiltrates a file; prompts for file path
+   - Automatically builds, loads the LKM, runs the Speedtest, and cleans up
 
-4. **Insert the LKM**
+3. **On the observer machine, run:**
    ```sh
-   insmod speedtest-exfil.ko
+   ./receiver.sh
    ```
-
-5. **Start the observer** *(optional)*
-   - Run `receiver.py` on the client or any passive observer — requires Python and [Scapy](https://scapy.readthedocs.io/en/latest/installation.html)
-   ```sh
-   python3 receiver.py
-   ```
-
-6. **Run the Speedtest**
-
-7. **Cleanup**
-   ```sh
-   rmmod speedtest-exfil.ko
-   make clean
-   ```
+   - Prompts for client IP and network interface
+   - Sniffs for exfiltrated data using covert temporal stamping
+   - Prints exfiltrated file contents on capture
 
 ## 🚀 Usage
 
