@@ -27,8 +27,8 @@ During upload, the client sends **PSH/ACK packets** with large TCP payloads cont
 ### 📦 Prerequisites
 - Virtual machine recommended (16 GB RAM minimum)
 - Root privileges required
-- Dependencies: `gcc`, `make`, `speedtest-cli`
-- Observer dependencies: Python 3 + [Scapy](https://scapy.readthedocs.io/en/latest/installation.html)
+- Client Dependencies: `gcc`, `make`, `speedtest-cli`
+- Observer/Receiver dependencies: `python3` + `scapy`
 
 ### 🛠️ Installation & Usage
 
@@ -41,13 +41,12 @@ During upload, the client sends **PSH/ACK packets** with large TCP payloads cont
    ```sh
    ./client.sh
    ```
-   - Auto-detects your IP
    - Select a function to run:
      - `max_bytes_exfiled()` — calculates max exfiltration capacity
      - `exfil_file()` — exfiltrates a file; prompts for file path
    - Automatically builds, loads the LKM, runs the Speedtest, and cleans up
 
-3. **On the observer machine, run:**
+3. **On the observer/receiver machine, run:**
    ```sh
    ./receiver.sh
    ```
