@@ -14,7 +14,7 @@ During upload, the client sends **PSH/ACK packets** with large TCP payloads cont
 
 `speedtest-exfil.c` is a Linux Kernel Module (LKM) using the Netfilter framework as a proof-of-concept (PoC) for exfiltrating data via Speedtest traffic.
 
-> ⚠️ This is a PoC, not a universal exfiltration tool. Tested on the current LTS version: Ubuntu 26.04 LTS ("Resolute Raccoon") with kernel version 7.0
+> ⚠️ This is a PoC, not a universal exfiltration tool. Tested on the current LTS version: Ubuntu 26.04 LTS (Resolute Raccoon 🦝) with kernel version 7.0
 
 ### Primary Functions
 | Function | Description |
