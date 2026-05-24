@@ -51,7 +51,7 @@ During upload, the client sends **PSH/ACK packets** with large TCP payloads cont
    ./receiver.sh
    ```
    - Prompts for client IP and network interface
-   - Sniffs for exfiltrated data using covert temporal stamping
+   - Sniffs for exfiltrated data using temporal stamping
    - Prints exfiltrated file contents on capture
 
 ## 🚀 Usage
