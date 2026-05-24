@@ -31,7 +31,7 @@ fi
 
 echo -e "${GREEN}All dependencies found.${NC}\n"
 
-# Get observer input
+# Get input
 read -p "Enter client IP (e.g. 192.168.1.10): " client_ip
 read -p "Enter network interface (e.g. ens18): " iface
 
