@@ -68,6 +68,12 @@ During upload, the client sends **PSH/ACK packets** with large TCP payloads cont
   <em>Figure 2: receiver.sh capturing exfiltrated data</em>
 </p>
 
+<p align="center">
+  <img src="images/maxexfil-usage.png" alt="Max Bytes Exfiltrated Usage" width="1000"/>
+  <br>
+  <em>Figure 3: client.sh with max_bytes_exfiled() exfiltrating ~2.2 GB within a single Speedtest on a Digital Ocean Droplet</em>
+</p>
+
 ## 💡 Acknowledgments
 
 I would like to thank my mentor, Dr. Andrew Kramer of Dakota State University, for providing the original idea that inspired this project and for his continuous guidance and support throughout my career in cybersecurity.
