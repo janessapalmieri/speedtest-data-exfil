@@ -17,10 +17,10 @@ During upload, the client sends **PSH/ACK packets** with large TCP payloads cont
 > ⚠️ This is a PoC, not a universal exfiltration tool. Tested on the current LTS version: Ubuntu 26.04 LTS (Resolute Raccoon 🦝) with kernel version 7.0
 
 ### Primary Functions
-| Function | Description |
+| Function | Description | 
 |---|---|
 | `max_bytes_exfiled()` | Overwrites the entire TCP payload of each upload PSH/ACK packet and calculates the maximum bytes exfiltrable in a single Speedtest |
-| `exfil_file()` | Exfiltrates a test file from the client machine |
+| `exfil_file()` | Exfiltrates a test file from the client machine; Use an observer machine to reconstruct file with receiver.sh |
 
 > ⚠️ Only one function can run at a time — `client.sh` handles this automatically.
 
