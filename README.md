@@ -19,7 +19,7 @@ During upload, the client sends **PSH/ACK packets** with large TCP payloads cont
 ### Primary Functions
 | Function | Description |
 |---|---|
-| `max_bytes_exfiled()` | Overwrites the entire TCP payload and calculates the maximum bytes exfiltrable in a single Speedtest |
+| `max_bytes_exfiled()` | Overwrites the entire TCP payload of each upload PSH/ACK packet and calculates the maximum bytes exfiltrable in a single Speedtest |
 | `exfil_file()` | Exfiltrates a test file from the client machine |
 
 > ⚠️ Only one function can run at a time — `client.sh` handles this automatically.
