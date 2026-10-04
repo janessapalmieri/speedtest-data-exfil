@@ -27,7 +27,7 @@ During upload, the client sends **PSH/ACK packets** with large TCP payloads cont
 ### 📦 Prerequisites
 - Virtual machine recommended (16 GB RAM minimum)
 - Root privileges required
-- Client Dependencies: `gcc`, `make`, `speedtest-cli`
+- Client Dependencies: `gcc`, `make`, [Speedtest CLI](https://www.speedtest.net/apps/cli)
 - Observer/Receiver dependencies: `python3` + `scapy`
 
 ### 🛠️ Installation & Usage
