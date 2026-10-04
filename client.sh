@@ -25,7 +25,7 @@ deps_ok=true
 command -v make &>/dev/null || { echo -e "${RED}Missing: make${NC}"; deps_ok=false; }
 command -v gcc &>/dev/null || { echo -e "${RED}Missing: gcc${NC}"; deps_ok=false; }
 [ -d "/lib/modules/$(uname -r)/build" ] || { echo -e "${RED}Missing: linux kernel headers${NC}"; deps_ok=false; }
-command -v speedtest-cli &>/dev/null || { echo -e "${RED}Missing: speedtest-cli${NC}"; deps_ok=false; }
+command -v speedtest &>/dev/null || { echo -e "${RED}Missing: speedtest-cli${NC}"; deps_ok=false; }
 
 if [ "$deps_ok" = false ]; then
     echo -e "${RED}Please install missing dependencies and try again.${NC}"
@@ -73,7 +73,7 @@ sudo insmod speedtest-exfil.ko
 
 echo ""
 echo -e "${GREEN}Running speedtest...${NC}"
-speedtest-cli
+speedtest
 sudo rmmod speedtest_exfil && make clean
 
 if [ "$choice" == "1" ]; then
