@@ -49,6 +49,9 @@ if [ "$choice" == "1" ]; then
     # Modify constants in C file
     sed -i "s|#define SOURCE_IP.*|#define SOURCE_IP \"$source_ip\"|" speedtest-max-exfil.c
    
+   #Modify Makefile to compile speedtest-max-exfil.c
+    sed -i "s|speedtest-test-exfil.o|speedtest-max-exfil.o|" Makefile
+
     # Build and load
     echo ""
     echo -e "${YELLOW}Building...${NC}"
@@ -68,6 +71,9 @@ elif [ "$choice" == "2" ]; then
     read -p "Enter TEST_FILE path (e.g. /home/user/secret.txt): " test_file
     sed -i "s|#define TEST_FILE.*|#define TEST_FILE \"$test_file\"|" speedtest-test-exfil.c
     
+    #Modify Makefile to compile speedtest-test-exfil.c
+    sed -i "s|speedtest-max-exfil.o|speedtest-test-exfil.o|" Makefile
+
     # Build and load
     echo ""
     echo -e "${YELLOW}Building...${NC}"
