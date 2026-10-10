@@ -1,4 +1,4 @@
-obj-m += speedtest-exfil.o
+obj-m += speedtest-max-exfil.o
 
 all:
 	make -C /lib/modules/$(shell uname -r)/build M=$(PWD) modules
