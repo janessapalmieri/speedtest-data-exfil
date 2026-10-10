@@ -71,7 +71,7 @@ elif [ "$choice" == "2" ]; then
     # Build and load
     echo ""
     echo -e "${YELLOW}Building...${NC}"
-    make -C ~/speedtest-data-exfil/test-exfil/
+    make -C ~/speedtest-data-exfil/test-exfil/speedtest-test-exfil.c
 
     echo -e "${YELLOW}Loading LKM...${NC}"
     sudo insmod ~/speedtest-data-exfil/test-exfil/speedtest-test-exfil.ko
