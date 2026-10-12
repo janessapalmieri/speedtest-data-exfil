@@ -33,8 +33,7 @@ During the upload speed calculation, the client sends **PSH/ACK packets** with l
    ```sh
    git clone https://github.com/janessapalmieri/speedtest-data-exfil.git
    ```
-
-**On the client machine:**
+**On the receiver machine:**
 
 2. **CD**
    ```sh
@@ -43,10 +42,13 @@ During the upload speed calculation, the client sends **PSH/ACK packets** with l
 
 3. **Run**
    ```sh
-   ./client.sh
+   ./receiver.sh
    ```
+   - Prompts for client IP and network interface
+   - Sniffs for exfiltrated data using temporal stamping
+   - Prints exfiltrated file contents on capture
 
-**On the receiver machine:**
+**On the client machine:**
 
 4. **CD**
    ```sh
@@ -55,11 +57,9 @@ During the upload speed calculation, the client sends **PSH/ACK packets** with l
 
 5. **Run**
    ```sh
-   ./receiver.sh
+   ./client.sh
    ```
-   - Prompts for client IP and network interface
-   - Sniffs for exfiltrated data using temporal stamping
-   - Prints exfiltrated file contents on capture
+   - Prompts for a test file to exfiltrate
 
 ## 🚀 Usage
 
