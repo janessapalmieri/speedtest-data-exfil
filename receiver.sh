@@ -45,4 +45,4 @@ echo -e "${YELLOW}Waiting for exfiltrated data...${NC}\n"
 sudo python3 receiver.py
 
 echo -e "\n${BOLD}${SPEEDTEST_PURPLE}Exfiled file contents:${NC}"
-cat exfil_file.txt
+cat exfil-file.txt

@@ -3,7 +3,7 @@ import os
 import struct
 import time
 
-OUTFILE = "exfil_file.txt"
+OUTFILE = "exfil-file.txt"
 FILTER = "tcp and src host 127.0.0.1 and port 8080 and tcp[13] & 0x18 == 0x18" #bpf filter port 8080 and PSH+ACK
 TIME_WINDOW = 300  # accept timestamps within ±5 minutes
 
