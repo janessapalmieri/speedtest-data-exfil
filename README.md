@@ -1,52 +1,59 @@
 # Data Exfiltration through Ookla's Speedtest
 
 ## 📌 About
-This project demonstrates data exfiltration through Ookla's Speedtest traffic. Speedtest servers using HTTP (e.g. `http://speedtest.midco.net`) or Speedtest-CLI conduct tests over plaintext — TCP payloads from client → server can be overwritten without corrupting the test, as no data integrity checks are in place. This makes Speedtest a strong C2 vector candidate for exfiltrating large datasets.
+This project demonstrates data exfiltration through Ookla's Speedtest traffic. Speedtest servers using HTTP (e.g. `http://speedtest.midco.net`) or Speedtest CLI conduct tests over plaintext. TCP payloads from client → server can be overwritten without corrupting the test. This creates a unique and valuable opportunity for exfiltrating large datasets through Speedtest.
 
 > This repository accompanies the IEEE publication *Leveraging Internet Speed Tests as a Covert Channel*, presented at the 2025 Cyber Awareness Research Symposium (CARS).
 
 ## 🔍 How it Works
-Speedtest measures upload/download speeds by sending large random data chunks between client and server. These chunks are not integrity-checked — they simply measure throughput.
+Speedtest measures upload/download speeds by sending large random data chunks between the client and server. These chunks are not integrity-checked. They simply measure throughput.
 
-During upload, the client sends **PSH/ACK packets** with large TCP payloads containing these random chunks. Since the server never validates the payload content, the data can be replaced with arbitrary exfiltrated data.
+During the upload speed calculation, the client sends **PSH/ACK packets** with large TCP payloads containing these random chunks. Since the server never validates the payload content, the data can be replaced with arbitrary exfiltrated data.
 
 ## ⚙️ Getting Started
 
-`speedtest-exfil.c` is a Linux Kernel Module (LKM) using the Netfilter framework as a proof-of-concept (PoC) for exfiltrating data via Speedtest traffic.
+`speedtest-exfil.c` is a Linux Kernel Module (LKM) using the Netfilter framework as a proof-of-concept (PoC) for exfiltrating a test file (`test-file.txt`) via Speedtest traffic.
 
 > ⚠️ This is a PoC, not a universal exfiltration tool. Tested on the current LTS version: Ubuntu 26.04 LTS (Resolute Raccoon 🦝) with kernel version 7.0
 
-### Primary Functions
+### Primary Function
 | Function | Description | 
 |---|---|
-| `max_bytes_exfiled()` | Overwrites the entire TCP payload of each upload PSH/ACK packet and calculates the maximum bytes exfiltrable in a single Speedtest |
-| `exfil_file()` | Exfiltrates a test file from the client machine; Use an observer machine to reconstruct file with receiver.sh |
-
-> ⚠️ Only one function can run at a time — `client.sh` handles this automatically.
+| `exfil_file()` | Exfiltrates a test file from the client machine; Use an observer machine to reconstruct file with receiver.sh. |
 
 ### 📦 Prerequisites
-- Virtual machine recommended (16 GB RAM minimum)
+- Two Virtual machines: 1 client & 1 observer (16 GB RAM minimum)
 - Root privileges required
 - Client Dependencies: `gcc`, `make`, [Speedtest CLI](https://www.speedtest.net/apps/cli)
-- Observer/Receiver dependencies: `python3` + `scapy`
+- Observer/Receiver dependencies: `python3` + `scapy`; The observer needs to be able to see the Speedtest traffic from the client.
 
 ### 🛠️ Installation & Usage
 
-1. **Clone the repo**
+1. **Clone the repo on both the client and receiver**
    ```sh
    git clone https://github.com/janessapalmieri/speedtest-data-exfil.git
    ```
 
-2. **On the client machine, run:**
+**On the client machine:**
+
+2. **CD**
+   ```sh
+   cd speedtest-data-exfil/
+   ```
+
+3. **Run**
    ```sh
    ./client.sh
    ```
-   - Select a function to run:
-     - `max_bytes_exfiled()` — calculates max exfiltration capacity
-     - `exfil_file()` — exfiltrates a file; prompts for file path
-   - Automatically builds, loads the LKM, runs the Speedtest, and cleans up
 
-3. **On the observer/receiver machine, run:**
+**On the receiver machine:**
+
+4. **CD**
+   ```sh
+   cd speedtest-data-exfil/
+   ```
+
+5. **Run**
    ```sh
    ./receiver.sh
    ```
@@ -71,7 +78,7 @@ During upload, the client sends **PSH/ACK packets** with large TCP payloads cont
 <p align="center">
   <img src="images/maxexfil-usage.png" alt="Max Bytes Exfiltrated Usage" width="1000"/>
   <br>
-  <em>Figure 3: client.sh with max_bytes_exfiled() exfiltrating ~2.2 GB within a single Speedtest on a Digital Ocean Droplet</em>
+  <em>Figure 3: POC exfiltrating ~2.2 GB within a single Speedtest on a Digital Ocean Droplet</em>
 </p>
 
 ## 💡 Acknowledgments
