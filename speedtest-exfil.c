@@ -31,8 +31,8 @@ MODULE_AUTHOR("Janessa Palmieri");
 MODULE_DESCRIPTION("Kernel module to modify Speedtest packets.");
 
 //const vars to modify; client.sh modifies these
-#define TEST_FILE "/path/to/file.txt"
-#define SOURCE_IP "192.168.X.X"
+#define TEST_FILE "~/speedtest-data-exfil/test-exfil.txt"	//***replace with the path to the test file to exfiltrate!!!***
+#define SOURCE_IP "192.168.X.X" //***replace with the client IP address!!!***
 
 //const vars to skip OPTIONS and POST packets over port 8080 seen with HTTP Speedtest servers
 #define SEARCH_STR_OPTIONS "OPTIONS"
