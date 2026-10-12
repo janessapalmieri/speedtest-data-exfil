@@ -59,7 +59,7 @@ speedtest
 sudo rmmod speedtest-exfil.ko && make clean
 
 echo ""
-echo "${BOLD}${SPEEDTEST_PURPLE}Check your receiver VM!${NC}"
+echo -e "${BOLD}${SPEEDTEST_PURPLE}Check your receiver VM!${NC}"
 
 #echo ""
 #echo -e "${BOLD}${SPEEDTEST_PURPLE}Total exfil output:${NC}"
