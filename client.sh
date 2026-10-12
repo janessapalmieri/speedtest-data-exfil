@@ -41,9 +41,9 @@ echo -e "${YELLOW}Using SOURCE_IP: $source_ip${NC}"
 # Modify constants in C file
 sed -i "s|#define SOURCE_IP.*|#define SOURCE_IP \"$source_ip\"|" speedtest-exfil.c
 
-#read -p "Enter TEST_FILE path (default: ~/speedtest-data-exfil/speedtest-exfil.txt): " test_file
-#test_file=${test_file:-~/speedtest-data-exfil/speedtest-exfil.txt}
-#sed -i "s|#define TEST_FILE.*|#define TEST_FILE \"$test_file\"|" speedtest-exfil.c
+echo ""
+read -p "Enter TEST_FILE path (e.g., /home/janessa/speedtest-data-exfil/test-file.txt): " test_file
+sed -i "s|#define TEST_FILE.*|#define TEST_FILE \"$test_file\"|" speedtest-exfil.c
 
 # Build
 echo ""
