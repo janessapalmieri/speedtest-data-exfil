@@ -45,8 +45,8 @@ During the upload speed calculation, the client sends **PSH/ACK packets** with l
    ./receiver.sh
    ```
    - Prompts for client IP and network interface
-   - Sniffs for exfiltrated data using temporal stamping
-   - Prints exfiltrated file contents on capture
+   - Sniffs for exfiltrated data using SCAPY with temporal stamping.
+   - Outputs the exfiltrated file contents 
 
 **On the client machine:**
 
@@ -59,7 +59,9 @@ During the upload speed calculation, the client sends **PSH/ACK packets** with l
    ```sh
    ./client.sh
    ```
-   - Prompts for a test file to exfiltrate
+   - This script compiles and loads `speedtest-exfil.c`, runs the Speedtest, then cleans up the build files when finished.
+   - Prompts for a test file to exfiltrate.
+   - Overwrites an upload speed packet with the test file, encodes it, and uses temporal stamping so the receiver can find it. 
 
 ## 🚀 Usage
 
